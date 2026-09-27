@@ -1,0 +1,79 @@
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+/**
+ * The FreshBrew bean. One filled path with an evenodd crease cut through it,
+ * so there is no <mask> and no id to collide when the mark is inlined more
+ * than once on a page. It stays legible down to 16px.
+ */
+const BEAN_PATH =
+  "M 50 5 A 35 45 0 1 0 50 95 A 35 45 0 1 0 50 5 Z M 50 9 L 47 10.1 L 45.2 12 L 43.9 14.2 L 43 16.4 L 42.4 18.7 L 42.1 21 L 42.1 23.3 L 42.3 25.5 L 42.8 27.6 L 43.3 29.7 L 44 31.6 L 44.7 33.5 L 45.4 35.2 L 46.1 36.9 L 46.7 38.4 L 47.3 39.8 L 47.7 41 L 48 42.1 L 48.2 42.9 L 48.2 43.5 L 48.2 43.7 L 48.1 43.8 L 48 43.9 L 47.9 44 L 47.5 44.4 L 46.8 45 L 44.7 46.5 L 42.9 48.4 L 41.4 50.5 L 40.5 52.8 L 40.1 55.2 L 40.2 57.5 L 40.5 59.6 L 41.1 61.5 L 41.9 63.2 L 42.7 64.9 L 43.6 66.5 L 44.5 68 L 45.4 69.5 L 46.3 70.9 L 47.1 72.4 L 47.9 73.8 L 48.6 75.2 L 49.2 76.6 L 49.7 78 L 50.1 79.4 L 50.4 80.9 L 50.5 82.4 L 50.5 84 L 50.3 85.9 L 49.9 88 L 50 91 L 50 91 L 53 89.9 L 54.8 88 L 56.1 85.8 L 57 83.6 L 57.6 81.3 L 57.9 79 L 57.9 76.7 L 57.7 74.5 L 57.2 72.4 L 56.7 70.3 L 56 68.4 L 55.3 66.5 L 54.6 64.8 L 53.9 63.1 L 53.3 61.6 L 52.7 60.2 L 52.3 59 L 52 57.9 L 51.8 57.1 L 51.8 56.5 L 51.8 56.3 L 51.9 56.2 L 52 56.1 L 52.1 56 L 52.5 55.6 L 53.2 55 L 55.3 53.5 L 57.1 51.6 L 58.6 49.5 L 59.5 47.2 L 59.9 44.8 L 59.8 42.5 L 59.5 40.4 L 58.9 38.5 L 58.1 36.8 L 57.3 35.1 L 56.4 33.5 L 55.5 32 L 54.6 30.5 L 53.7 29.1 L 52.9 27.6 L 52.1 26.2 L 51.4 24.8 L 50.8 23.4 L 50.3 22 L 49.9 20.6 L 49.6 19.1 L 49.5 17.6 L 49.5 16 L 49.7 14.1 L 50.1 12 L 50 9 Z";
+
+export function BeanMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+    >
+      <g transform="rotate(-16 50 50)">
+        <path d={BEAN_PATH} fill="currentColor" fillRule="evenodd" />
+      </g>
+    </svg>
+  );
+}
+
+interface LogoProps {
+  className?: string;
+  /** "light" is light ink for dark backgrounds, "dark" is the reverse. */
+  tone?: "dark" | "light";
+  /** Pass null to render the lockup without wrapping it in a link. */
+  href?: string | null;
+}
+
+/**
+ * Mark plus wordmark. "Brew" is set in italic and in the accent colour, the
+ * same roman-then-italic move the section headings use, so the logo reads as
+ * part of the same voice rather than a badge dropped on top of it.
+ */
+export function Logo({ className, tone = "dark", href = "/" }: LogoProps) {
+  const light = tone === "light";
+
+  const lockup = (
+    <span className={cn("inline-flex items-center gap-2.5", className)}>
+      <BeanMark
+        className={cn(
+          "h-[1.35em] w-[1.35em] shrink-0 transition-colors duration-300",
+          light ? "text-cream" : "text-espresso",
+        )}
+      />
+      <span className="font-display text-[1.375rem] leading-none tracking-[-0.01em] sm:text-2xl">
+        <span
+          className={cn(
+            "transition-colors duration-300",
+            light ? "text-cream" : "text-espresso",
+          )}
+        >
+          Fresh
+        </span>
+        <em
+          className={cn(
+            "italic transition-colors duration-300",
+            light ? "text-tan" : "text-copper",
+          )}
+        >
+          Brew
+        </em>
+      </span>
+    </span>
+  );
+
+  if (!href) return lockup;
+
+  return (
+    <Link href={href} aria-label="FreshBrew — home" className="inline-flex">
+      {lockup}
+    </Link>
+  );
+}
